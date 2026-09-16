@@ -5,19 +5,23 @@ import datetime
 
 console = Console()
 
-def display_tunnel_info(local_port: int, public_url: str):
+def display_tunnel_info(local_port: int, relay_url: str, tunnel_id: str, public_url: str):
     content = Text()
-    content.append("+ Connected\n", style="green")
-    content.append("+ Tunnel established\n\n", style="green")
     
-    content.append("Local:\n", style="bold")
-    content.append(f"  http://127.0.0.1:{local_port}\n\n", style="cyan")
+    content.append("Local service:\n", style="bold")
+    content.append(f"127.0.0.1:{local_port}\n\n", style="cyan")
+    
+    content.append("Relay:\n", style="bold")
+    content.append(f"{relay_url}\n\n", style="magenta")
+    
+    content.append("Connection status:\n", style="bold")
+    content.append("Connected\n\n", style="green")
+    
+    content.append("Tunnel ID:\n", style="bold")
+    content.append(f"{tunnel_id}\n\n", style="yellow")
     
     content.append("Public URL:\n", style="bold")
-    content.append(f"  {public_url}\n\n", style="magenta")
-    
-    content.append("Status: ", style="bold")
-    content.append("ACTIVE", style="green bold")
+    content.append(f"{public_url}", style="green bold")
     
     panel = Panel(
         content,

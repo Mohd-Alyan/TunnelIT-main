@@ -80,9 +80,43 @@ async def handle_tunnel_request(tunnel_id: str, path: str, request: Request):
         # Filter hop-by-hop headers from response
         filtered_headers = {k: v for k, v in resp_headers.items() if k.lower() not in HOP_BY_HOP_HEADERS}
         
-        return Response(content=resp_body_bytes, status_code=status, headers=filtered_headers)
+        # Rewrite absolute path redirects to include the tunnel prefix
+        location_key = next((k for k in filtered_headers.keys() if k.lower() == 'location'), None)
+        if location_key:
+            location = filtered_headers[location_key]
+            if location.startswith("/") and not location.startswith(f"/t/{tunnel_id}/"):
+                filtered_headers[location_key] = f"/t/{tunnel_id}{location}"
+        
+        response = Response(content=resp_body_bytes, status_code=status, headers=filtered_headers)
+        
+        # Inject tunnel cookie for fallback routing
+        response.set_cookie(key="active_tunnel", value=tunnel_id, path="/", httponly=True)
+        
+        return response
         
     except Exception as e:
         logger.error(f"Error handling request {request_id} for tunnel {tunnel_id}: {e}")
         tunnel.pending_requests.pop(request_id, None)
         return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
+
+import re
+
+@http_router.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"])
+async def handle_root_request(path: str, request: Request):
+    tunnel_id = None
+    
+    # 1. Try to infer from Referer header
+    referer = request.headers.get("referer", "")
+    match = re.search(r'/t/([a-zA-Z0-9]+)/?', referer)
+    if match:
+        tunnel_id = match.group(1)
+        
+    # 2. Fallback to active_tunnel cookie
+    if not tunnel_id:
+        tunnel_id = request.cookies.get("active_tunnel")
+        
+    if not tunnel_id or not registry.exists(tunnel_id):
+        raise HTTPException(status_code=404, detail="Not Found")
+        
+    # Re-route to the standard tunnel handler
+    return await handle_tunnel_request(tunnel_id, path, request)

@@ -12,9 +12,6 @@ setup_logging()
 
 app = FastAPI(title="Tunnel It Relay")
 
-app.include_router(ws_router)
-app.include_router(http_router)
-
 @app.get("/health")
 async def health_check():
     return JSONResponse(content={"status": "healthy"})
@@ -25,6 +22,9 @@ async def get_status():
         "status": "running",
         "active_tunnels": registry.active_count()
     })
+
+app.include_router(ws_router)
+app.include_router(http_router)
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host=settings.HOST, port=settings.PORT, reload=False)

@@ -71,7 +71,7 @@ class TunnelConnection:
                         self.tunnel_id = reg_resp.tunnel_id
                         self.public_url = reg_resp.public_url
                         
-                        display_tunnel_info(self.target_port, self.public_url)
+                        display_tunnel_info(self.target_port, settings.RELAY_URL, self.tunnel_id, self.public_url)
                         
                         await self._message_loop()
                     else:
