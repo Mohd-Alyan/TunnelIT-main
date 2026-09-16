@@ -12,4 +12,4 @@ def generate_request_id() -> str:
 
 def get_public_url(tunnel_id: str) -> str:
     base = settings.PUBLIC_BASE_URL.rstrip('/')
-    return f"{base}/t/{tunnel_id}"
+    return f"{base}/t/{tunnel_id}/"
