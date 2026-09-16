@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tunnel-it-cli"
+version = "0.1.0"
+description = "Tunnel It CLI Agent"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "typer",
+    "websockets",
+    "httpx",
+    "pydantic", "pydantic-settings",
+    "python-dotenv",
+    "rich"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio"
+]
+
+[project.scripts]
+tunnel-it = "tunnel_it.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["tunnel_it*"]

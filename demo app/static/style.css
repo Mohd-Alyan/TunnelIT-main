@@ -1,0 +1,27 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #282c34;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    text-align: center;
+}
+
+#main-text {
+    font-size: 5rem;
+    color: #61dafb;
+    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+#main-text:hover {
+    transform: scale(1.1);
+    color: #ffffff;
+    text-shadow: 0 0 20px #61dafb, 0 0 40px #61dafb;
+}
