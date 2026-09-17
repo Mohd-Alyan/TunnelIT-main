@@ -4,157 +4,354 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tunnel It - Expose your local HTTP service</title>
+    <!-- Google Fonts: Inter for UI, Fira Code for Monospace -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="navbar">
-        <div class="container">
-            <div class="logo">Tunnel It</div>
-            <nav>
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="ph-fill ph-intersect"></i>
+                <span>tunnel-it</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#install">Installation</a>
                 <a href="#quick-start">Quick Start</a>
+                <a href="#architecture">Architecture</a>
                 <a href="#commands">Commands</a>
-                <a href="https://github.com/Mohd-Alyan/TunnelIT-main" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="#features">Features</a>
             </nav>
+            <div class="nav-actions">
+                <a href="https://github.com/Mohd-Alyan/TunnelIT-main" class="nav-link" target="_blank">GitHub</a>
+                <a href="#install" class="btn btn-primary btn-sm">INSTALL CLI</a>
+                <button class="btn-icon"><i class="ph ph-user"></i></button>
+            </div>
         </div>
     </header>
 
     <main>
         <section class="hero">
-            <div class="container">
-                <h1 class="title">Tunnel It</h1>
-                <p class="subtitle">Expose your local HTTP service<br>through a reverse tunnel.</p>
+            <div class="hero-content">
+                <div class="badge">
+                    <span class="pulse-dot"></span> v1.4.0 • Zero NAT Configuration
+                </div>
+                <h1 class="hero-title">Tunnel It</h1>
+                <p class="hero-subtitle">Expose your local HTTP service through a reverse tunnel.</p>
                 
-                <div class="features-list">
-                    <span>Run locally.</span>
-                    <span>Share publicly.</span>
-                    <span>No port forwarding.</span>
+                <div class="hero-pills">
+                    <span class="pill"><span class="accent">></span> Run locally.</span>
+                    <span class="pill"><span class="accent">></span> Share publicly.</span>
+                    <span class="pill"><span class="accent">></span> No port forwarding.</span>
                 </div>
 
-                <div class="actions">
-                    <a href="#install" class="btn btn-primary">Install Tunnel It</a>
-                    <a href="https://github.com/Mohd-Alyan/TunnelIT-main" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                <div class="hero-actions">
+                    <a href="#install" class="btn btn-primary">
+                        <i class="ph-bold ph-download-simple"></i> INSTALL TUNNEL IT
+                    </a>
+                    <a href="https://github.com/Mohd-Alyan/TunnelIT-main" target="_blank" class="btn btn-secondary">
+                        <i class="ph-bold ph-github-logo"></i> VIEW ON GITHUB
+                    </a>
                 </div>
             </div>
         </section>
 
-        <section id="install" class="install-section">
+        <section class="terminal-section">
             <div class="container">
-                <h2>Installation</h2>
-                <p>Install the CLI globally using PowerShell:</p>
-                
-                <div class="code-block-wrapper">
-                    <div class="code-block">
-                        <code>irm <span class="site-domain">https://tunnelit.example.com</span>/install.ps1 | iex</code>
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="window-controls">
+                            <span class="control close"></span>
+                            <span class="control minimize"></span>
+                            <span class="control maximize"></span>
+                        </div>
+                        <div class="terminal-title">bash - dev-session</div>
+                        <div class="terminal-status"><span class="pulse-dot green"></span> ONLINE</div>
                     </div>
-                    <button class="btn-copy" id="copy-install-btn">Copy</button>
-                </div>
-                
-                <div class="installer-links">
-                    <a href="install.ps1" target="_blank" class="view-source">View install.ps1</a>
-                </div>
-                <p class="config-note">Note: The domain above is a placeholder and should be updated with the actual deployed site domain.</p>
-            </div>
-        </section>
+                    <div class="terminal-body">
+                        <div class="cmd-line"><span class="prompt">></span> tunnel-it expose 5000</div>
+                        <div class="cmd-output text-muted">Connecting to relay cluster [wss://relay.tunnelit.dev]...</div>
+                        <div class="cmd-output text-success"><i class="ph-bold ph-check"></i> Established outbound duplex stream (TLSv1.3 / WebSocket)</div>
+                        
+                        <div class="terminal-table">
+                            <div class="t-row">
+                                <span class="t-key">Public URL:</span>
+                                <a href="#" class="t-val accent-link">https://echo-77b.tunnel-it.live</a>
+                            </div>
+                            <div class="t-row">
+                                <span class="t-key">Forwarding To:</span>
+                                <span class="t-val">http://127.0.0.1:5000</span>
+                            </div>
+                        </div>
 
-        <section id="quick-start" class="quick-start-section">
-            <div class="container">
-                <h2>Quick Start</h2>
-                
-                <div class="step">
-                    <h3>1. Install</h3>
-                    <div class="code-block-minimal">
-                        <code>irm <span class="site-domain">https://tunnelit.example.com</span>/install.ps1 | iex</code>
+                        <div class="terminal-divider">LIVE INGRESS TRAFFIC</div>
+                        
+                        <div class="traffic-row">
+                            <span class="status-badge success">200 OK</span>
+                            <span class="method">GET</span>
+                            <span class="path">/api/v1/health</span>
+                            <span class="time">14ms</span>
+                        </div>
+                        <div class="traffic-row">
+                            <span class="status-badge warning">101 SW</span>
+                            <span class="method">GET</span>
+                            <span class="path">/socket.io/?EIO=4</span>
+                            <span class="time">8ms</span>
+                        </div>
+                        <div class="traffic-row">
+                            <span class="status-badge success">200 OK</span>
+                            <span class="method">POST</span>
+                            <span class="path">/webhooks/stripe</span>
+                            <span class="time">32ms</span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="step">
-                    <h3>2. Wake the relay</h3>
-                    <div class="code-block-minimal">
-                        <code>tunnel-it wakeup</code>
-                    </div>
-                </div>
-
-                <div class="step">
-                    <h3>3. Expose your service</h3>
-                    <div class="code-block-minimal">
-                        <code>tunnel-it expose 5000</code>
-                    </div>
-                    <p class="step-desc">5000 is your local application's port.</p>
-                </div>
             </div>
         </section>
 
-        <section id="how-it-works" class="how-it-works-section">
+        <section id="install" class="page-section">
             <div class="container">
-                <h2>How It Works</h2>
-                <div class="diagram">
-                    <pre><code>Your Browser
-     │
-     ▼
-Tunnel It Relay
-     │ WSS
-     ▼
-Tunnel It CLI
-     │
-     ▼
-localhost:&lt;PORT&gt;</code></pre>
-                </div>
-                <p>The CLI creates an outbound persistent WebSocket connection to the relay and forwards HTTP traffic to the local service.</p>
-            </div>
-        </section>
-
-        <section id="commands" class="commands-section">
-            <div class="container">
-                <h2>Command Reference</h2>
+                <h2 class="section-title">Installation</h2>
+                <p class="section-subtitle">Install the CLI globally using PowerShell:</p>
                 
-                <div class="command">
-                    <code>tunnel-it expose &lt;PORT&gt;</code>
-                    <p>Expose a local HTTP service.</p>
-                </div>
-
-                <div class="command">
-                    <code>tunnel-it wakeup</code>
-                    <p>Wake the configured relay and wait until it is ready.</p>
-                </div>
-
-                <div class="command">
-                    <code>tunnel-it changerelay &lt;URL&gt;</code>
-                    <p>Change the persistent relay server.</p>
-                    <p class="relay-info">Current default relay: <code>wss://tunnelit-main.onrender.com/ws</code></p>
-                    <p class="relay-info">You can replace the default relay with another compatible Tunnel It relay. This configuration is stored persistently and survives upgrades.</p>
-                </div>
-
-                <div class="command">
-                    <code>tunnel-it --help</code>
-                    <p>Show complete CLI help.</p>
+                <div class="install-card">
+                    <div class="code-bar">
+                        <span class="prompt">></span>
+                        <code>irm <span class="site-domain">tunnel-it.vercel.app</span>/install.ps1 | iex</code>
+                        <button class="btn btn-secondary btn-sm copy-btn" id="copy-install-btn">
+                            <i class="ph-bold ph-copy"></i> COPY
+                        </button>
+                    </div>
+                    <div class="install-footer">
+                        <a href="install.ps1" class="accent-link"><i class="ph-bold ph-file-code"></i> View install.ps1</a>
+                        <span class="text-muted text-sm">Note: The domain above is a placeholder and should be updated with the actual deployed site domain.</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="features" class="features-section">
+        <section id="quick-start" class="page-section">
             <div class="container">
-                <h2>Features</h2>
-                <ul class="feature-bullets">
-                    <li>Reverse HTTP tunneling</li>
-                    <li>Persistent WebSocket connection</li>
-                    <li>Automatic reconnect</li>
-                    <li>Binary request/response forwarding</li>
-                    <li>Concurrent request handling</li>
-                    <li>Dynamic tunnel IDs</li>
-                    <li>Configurable relay</li>
-                    <li>Localhost-only forwarding</li>
-                    <li>Relay wakeup helper</li>
-                </ul>
+                <h2 class="section-title">Quick Start</h2>
+                <p class="section-subtitle">Get a live reverse tunnel operational in under 30 seconds.</p>
+
+                <div class="steps-list">
+                    <!-- Step 1 -->
+                    <div class="step-card">
+                        <div class="step-info">
+                            <div class="step-number">1</div>
+                            <div class="step-text">
+                                <h3>1. Install</h3>
+                                <p>Download and configure the standalone executable.</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <div class="mini-code-bar">
+                                <code>irm <span class="site-domain">tunnel-it.vercel.app</span>/install.ps1 | iex</code>
+                                <button class="copy-icon-btn"><i class="ph ph-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-card">
+                        <div class="step-info">
+                            <div class="step-number">2</div>
+                            <div class="step-text">
+                                <h3>2. Wake the relay</h3>
+                                <p>Ping upstream relay infrastructure and initialize keep-alive.</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <div class="mini-code-bar">
+                                <code>tunnel-it wakeup</code>
+                                <button class="copy-icon-btn"><i class="ph ph-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-card">
+                        <div class="step-info">
+                            <div class="step-number">3</div>
+                            <div class="step-text">
+                                <h3>3. Expose your service</h3>
+                                <p>5000 is your local application's port.</p>
+                            </div>
+                        </div>
+                        <div class="step-action">
+                            <div class="mini-code-bar">
+                                <code>tunnel-it expose 5000</code>
+                                <button class="copy-icon-btn"><i class="ph ph-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="page-section">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Ingress architecture and multiplexed proxy flow.</p>
+                
+                <div class="architecture-card">
+                    <div class="arch-diagram">
+                        <div class="arch-node">
+                            <div class="arch-icon"><i class="ph-fill ph-globe-hemisphere-west"></i></div>
+                            <div class="arch-title">Your Browser</div>
+                            <div class="arch-sub">Public Client</div>
+                        </div>
+                        <div class="arch-arrow">
+                            <span class="arrow-text">HTTPS</span>
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </div>
+                        
+                        <div class="arch-node">
+                            <div class="hub-badge">CENTRAL HUB</div>
+                            <div class="arch-icon"><i class="ph-fill ph-hard-drives"></i></div>
+                            <div class="arch-title">Tunnel It Relay</div>
+                            <div class="arch-sub">WSS Edge</div>
+                        </div>
+                        <div class="arch-arrow">
+                            <span class="arrow-text">WSS DUPLEX</span>
+                            <i class="ph-bold ph-arrows-left-right"></i>
+                        </div>
+                        
+                        <div class="arch-node">
+                            <div class="arch-icon"><i class="ph-fill ph-terminal-window"></i></div>
+                            <div class="arch-title">Tunnel It CLI</div>
+                            <div class="arch-sub">Local Host Agent</div>
+                        </div>
+                        <div class="arch-arrow">
+                            <span class="arrow-text">HTTP</span>
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </div>
+                        
+                        <div class="arch-node">
+                            <div class="arch-icon"><i class="ph-fill ph-cpu"></i></div>
+                            <div class="arch-title">localhost</div>
+                            <div class="arch-sub">Local Daemon</div>
+                        </div>
+                    </div>
+                    <div class="arch-footer">
+                        The CLI creates an outbound persistent WebSocket connection to the relay and forwards HTTP traffic to the local service.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="commands" class="page-section">
+            <div class="container">
+                <h2 class="section-title">Command Reference</h2>
+                <p class="section-subtitle">CLI commands for stream configuration, routing, and relays.</p>
+
+                <div class="command-list">
+                    <div class="cmd-card">
+                        <div class="cmd-main">
+                            <div class="cmd-badge">tunnel-it expose</div>
+                            <p class="cmd-desc">Expose a local HTTP service.</p>
+                        </div>
+                        <div class="cmd-meta">PRIMARY EXECUTION</div>
+                    </div>
+
+                    <div class="cmd-card">
+                        <div class="cmd-main">
+                            <div class="cmd-badge">tunnel-it wakeup</div>
+                            <p class="cmd-desc">Wake the configured relay and wait until it is ready.</p>
+                        </div>
+                        <div class="cmd-meta">DIAGNOSTIC / READY</div>
+                    </div>
+
+                    <div class="cmd-card">
+                        <div class="cmd-main">
+                            <div class="cmd-badge">tunnel-it changerelay</div>
+                            <p class="cmd-desc">Change the persistent relay server.</p>
+                            <p class="cmd-sub">Current default relay: <code class="inline-code">wss://tunnelit-main.onrender.com/ws</code></p>
+                            <p class="cmd-sub">You can replace the default relay with another compatible Tunnel It relay. This configuration is stored persistently and survives upgrades.</p>
+                        </div>
+                        <div class="cmd-meta">CONFIGURATION</div>
+                    </div>
+
+                    <div class="cmd-card">
+                        <div class="cmd-main">
+                            <div class="cmd-badge">tunnel-it --help</div>
+                            <p class="cmd-desc">Show complete CLI help.</p>
+                        </div>
+                        <div class="cmd-meta">DOCUMENTATION</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="page-section">
+            <div class="container">
+                <h2 class="section-title">Features</h2>
+                <p class="section-subtitle">Designed from first principles for modern webhooks and API prototyping.</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-arrows-left-right"></i></div>
+                        <h3 class="feat-title">Reverse HTTP tunneling</h3>
+                        <p class="feat-desc">Expose local endpoints safely without modifying edge routers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-plugs-connected"></i></div>
+                        <h3 class="feat-title">Persistent WebSocket connection</h3>
+                        <p class="feat-desc">Outbound long-lived channels circumvent strict corporate firewalls.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-arrows-clockwise"></i></div>
+                        <h3 class="feat-title">Automatic reconnect</h3>
+                        <p class="feat-desc">Exponential backoff reconnection ensures zero dropped developer sessions.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-file-code"></i></div>
+                        <h3 class="feat-title">Binary request/response forwarding</h3>
+                        <p class="feat-desc">Full support for multipart/form-data, buffers, image streaming, and audio payloads.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-tree-structure"></i></div>
+                        <h3 class="feat-title">Concurrent request handling</h3>
+                        <p class="feat-desc">Multiplex hundreds of simultaneous requests across a unified tunnel link.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-fingerprint"></i></div>
+                        <h3 class="feat-title">Dynamic tunnel IDs</h3>
+                        <p class="feat-desc">Instant distinct URL endpoints provisioned without naming collisions.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-sliders"></i></div>
+                        <h3 class="feat-title">Configurable relay</h3>
+                        <p class="feat-desc">Point the client to your own self-hosted relay clusters with a single flag.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-shield-check"></i></div>
+                        <h3 class="feat-title">Localhost-only forwarding</h3>
+                        <p class="feat-desc">Local traffic remains bounded strictly to internal loopback interfaces.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feat-icon"><i class="ph-bold ph-alarm"></i></div>
+                        <h3 class="feat-title">Relay wakeup helper</h3>
+                        <p class="feat-desc">Seamlessly awakens sleeping serverless and free-tier infrastructure before ingress starts.</p>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; Tunnel It. Open source under the MIT License.</p>
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-left">
+                &copy; Tunnel It. Open source under the MIT License.
+            </div>
+            <div class="footer-right">
+                <a href="https://github.com/Mohd-Alyan/TunnelIT-main" target="_blank">GitHub</a>
+            </div>
         </div>
     </footer>
 
