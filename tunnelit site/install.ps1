@@ -64,13 +64,15 @@ if ($IsWindows) {
     $envPath = [Environment]::GetEnvironmentVariable("PATH", "User") + ";" + [Environment]::GetEnvironmentVariable("PATH", "Machine")
     if ($envPath -notmatch [regex]::Escape($scriptsPath)) {
         Write-Host "Warning: The Python user scripts directory is not in your PATH." -ForegroundColor Yellow
-        Write-Host "You must add the following directory to your PATH environment variable to use the command in new windows:" -ForegroundColor Yellow
-        Write-Host $scriptsPath -ForegroundColor Cyan
-        Write-Host ""
+        Write-Host "Automatically adding it to your User Environment Variables..." -ForegroundColor Cyan
         
-        # Temporarily add to the current session so it works immediately
-        $env:PATH += ";$scriptsPath"
-        Write-Host "(We have temporarily added it to your current session so you can test it right now!)" -ForegroundColor Green
+        # Add to permanent user PATH
+        $currentUserPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+        $newUserPath = if ($currentUserPath) { "$currentUserPath;$scriptsPath" } else { $scriptsPath }
+        [Environment]::SetEnvironmentVariable("PATH", $newUserPath, "User")
+        
+        Write-Host "Success! The path has been added permanently." -ForegroundColor Green
+        Write-Host "IMPORTANT: You MUST restart your PowerShell terminal for the changes to take effect." -ForegroundColor Yellow
         Write-Host ""
     }
 }
