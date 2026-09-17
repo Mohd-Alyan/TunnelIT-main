@@ -64,8 +64,13 @@ if ($IsWindows) {
     $envPath = [Environment]::GetEnvironmentVariable("PATH", "User") + ";" + [Environment]::GetEnvironmentVariable("PATH", "Machine")
     if ($envPath -notmatch [regex]::Escape($scriptsPath)) {
         Write-Host "Warning: The Python user scripts directory is not in your PATH." -ForegroundColor Yellow
-        Write-Host "You must add the following directory to your PATH environment variable:" -ForegroundColor Yellow
+        Write-Host "You must add the following directory to your PATH environment variable to use the command in new windows:" -ForegroundColor Yellow
         Write-Host $scriptsPath -ForegroundColor Cyan
+        Write-Host ""
+        
+        # Temporarily add to the current session so it works immediately
+        $env:PATH += ";$scriptsPath"
+        Write-Host "(We have temporarily added it to your current session so you can test it right now!)" -ForegroundColor Green
         Write-Host ""
     }
 }
