@@ -20,9 +20,23 @@ Tunnel It CLI is a lightweight terminal application that allows you to expose a 
 
 ## Usage
 
+To wake the Render relay (if it has been asleep):
+```bash
+tunnel-it wakeup
+```
+
 To expose a local port (e.g., 8000), simply run:
 ```bash
 tunnel-it expose 8000
+```
+
+Recommended usage:
+```bash
+# Wake the Render relay
+tunnel-it wakeup
+
+# Expose local service
+tunnel-it expose 5000
 ```
 
 The CLI will dynamically register with the configured relay, obtain a public URL and tunnel ID, and then seamlessly forward incoming HTTP requests to your local service.

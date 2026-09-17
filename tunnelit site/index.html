@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tunnel It - Expose your local HTTP service</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <div class="logo">Tunnel It</div>
+            <nav>
+                <a href="#quick-start">Quick Start</a>
+                <a href="#commands">Commands</a>
+                <a href="https://github.com/Mohd-Alyan/TunnelIT-main" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1 class="title">Tunnel It</h1>
+                <p class="subtitle">Expose your local HTTP service<br>through a reverse tunnel.</p>
+                
+                <div class="features-list">
+                    <span>Run locally.</span>
+                    <span>Share publicly.</span>
+                    <span>No port forwarding.</span>
+                </div>
+
+                <div class="actions">
+                    <a href="#install" class="btn btn-primary">Install Tunnel It</a>
+                    <a href="https://github.com/Mohd-Alyan/TunnelIT-main" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="install" class="install-section">
+            <div class="container">
+                <h2>Installation</h2>
+                <p>Install the CLI globally using PowerShell:</p>
+                
+                <div class="code-block-wrapper">
+                    <div class="code-block">
+                        <code>irm <span class="site-domain">https://tunnelit.example.com</span>/install.ps1 | iex</code>
+                    </div>
+                    <button class="btn-copy" id="copy-install-btn">Copy</button>
+                </div>
+                
+                <div class="installer-links">
+                    <a href="install.ps1" target="_blank" class="view-source">View install.ps1</a>
+                </div>
+                <p class="config-note">Note: The domain above is a placeholder and should be updated with the actual deployed site domain.</p>
+            </div>
+        </section>
+
+        <section id="quick-start" class="quick-start-section">
+            <div class="container">
+                <h2>Quick Start</h2>
+                
+                <div class="step">
+                    <h3>1. Install</h3>
+                    <div class="code-block-minimal">
+                        <code>irm <span class="site-domain">https://tunnelit.example.com</span>/install.ps1 | iex</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>2. Wake the relay</h3>
+                    <div class="code-block-minimal">
+                        <code>tunnel-it wakeup</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3>3. Expose your service</h3>
+                    <div class="code-block-minimal">
+                        <code>tunnel-it expose 5000</code>
+                    </div>
+                    <p class="step-desc">5000 is your local application's port.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works-section">
+            <div class="container">
+                <h2>How It Works</h2>
+                <div class="diagram">
+                    <pre><code>Your Browser
+     │
+     ▼
+Tunnel It Relay
+     │ WSS
+     ▼
+Tunnel It CLI
+     │
+     ▼
+localhost:&lt;PORT&gt;</code></pre>
+                </div>
+                <p>The CLI creates an outbound persistent WebSocket connection to the relay and forwards HTTP traffic to the local service.</p>
+            </div>
+        </section>
+
+        <section id="commands" class="commands-section">
+            <div class="container">
+                <h2>Command Reference</h2>
+                
+                <div class="command">
+                    <code>tunnel-it expose &lt;PORT&gt;</code>
+                    <p>Expose a local HTTP service.</p>
+                </div>
+
+                <div class="command">
+                    <code>tunnel-it wakeup</code>
+                    <p>Wake the configured relay and wait until it is ready.</p>
+                </div>
+
+                <div class="command">
+                    <code>tunnel-it changerelay &lt;URL&gt;</code>
+                    <p>Change the persistent relay server.</p>
+                    <p class="relay-info">Current default relay: <code>wss://tunnelit-main.onrender.com/ws</code></p>
+                    <p class="relay-info">You can replace the default relay with another compatible Tunnel It relay. This configuration is stored persistently and survives upgrades.</p>
+                </div>
+
+                <div class="command">
+                    <code>tunnel-it --help</code>
+                    <p>Show complete CLI help.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features-section">
+            <div class="container">
+                <h2>Features</h2>
+                <ul class="feature-bullets">
+                    <li>Reverse HTTP tunneling</li>
+                    <li>Persistent WebSocket connection</li>
+                    <li>Automatic reconnect</li>
+                    <li>Binary request/response forwarding</li>
+                    <li>Concurrent request handling</li>
+                    <li>Dynamic tunnel IDs</li>
+                    <li>Configurable relay</li>
+                    <li>Localhost-only forwarding</li>
+                    <li>Relay wakeup helper</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; Tunnel It. Open source under the MIT License.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
