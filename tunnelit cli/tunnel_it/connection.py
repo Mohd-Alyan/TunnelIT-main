@@ -8,16 +8,22 @@ from .http_forwarder import HTTPForwarder
 from .config import settings
 from .logging_config import logger
 from .display import display_tunnel_info, log_request
+from .metrics import MetricsCollector
+from .dashboard.app import run_dashboard
+
 
 class TunnelConnection:
     def __init__(self, target_port: int):
         self.target_port = target_port
-        self.forwarder = HTTPForwarder(target_port)
+        self.metrics_collector = MetricsCollector("", "", target_port)
+        self.forwarder = HTTPForwarder(target_port, self.metrics_collector)
         self.ws: Any = None
         self.active_tasks = set()
         self.running = False
         self.tunnel_id: Optional[str] = None
         self.public_url: Optional[str] = None
+        self.dashboard_thread = None
+        self.dashboard_url: Optional[str] = None
 
     async def _handle_request(self, req_msg: RequestMessage):
         resp_msg = await self.forwarder.forward(req_msg)
@@ -71,7 +77,24 @@ class TunnelConnection:
                         self.tunnel_id = reg_resp.tunnel_id
                         self.public_url = reg_resp.public_url
                         
-                        display_tunnel_info(self.target_port, settings.RELAY_URL, self.tunnel_id, self.public_url)
+                        self.metrics_collector.tunnel_id = self.tunnel_id
+                        self.metrics_collector.public_url = self.public_url
+                        await self.metrics_collector.start()
+                        
+                        if settings.DASHBOARD_ENABLED:
+                            self.dashboard_thread, self.dashboard_url = run_dashboard(
+                                self.metrics_collector,
+                                settings.DASHBOARD_HOST,
+                                settings.DASHBOARD_PORT
+                            )
+                        
+                        display_tunnel_info(
+                            self.target_port, 
+                            settings.RELAY_URL, 
+                            self.tunnel_id, 
+                            self.public_url,
+                            self.dashboard_url
+                        )
                         
                         await self._message_loop()
                     else:
@@ -99,3 +122,10 @@ class TunnelConnection:
             task.cancel()
             
         await self.forwarder.close()
+        
+        if self.metrics_collector:
+            await self.metrics_collector.stop()
+            self.metrics_collector.finalize()
+        
+        if self.dashboard_thread:
+            self.dashboard_thread.join(timeout=2)

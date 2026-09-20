@@ -14,7 +14,8 @@ dependencies = [
     "httpx",
     "pydantic", "pydantic-settings",
     "python-dotenv",
-    "rich"
+    "rich",
+    "flask"
 ]
 
 [project.optional-dependencies]

@@ -5,7 +5,7 @@ import datetime
 
 console = Console()
 
-def display_tunnel_info(local_port: int, relay_url: str, tunnel_id: str, public_url: str):
+def display_tunnel_info(local_port: int, relay_url: str, tunnel_id: str, public_url: str, dashboard_url: str = None):
     content = Text()
     
     content.append("Local service:\n", style="bold")
@@ -23,6 +23,11 @@ def display_tunnel_info(local_port: int, relay_url: str, tunnel_id: str, public_
     content.append("Public URL:\n", style="bold")
     content.append(f"{public_url}", style="green bold")
     
+    if dashboard_url:
+        content.append("\n\n")
+        content.append("Dashboard:\n", style="bold")
+        content.append(f"{dashboard_url}", style="cyan bold")
+
     panel = Panel(
         content,
         title="[bold blue]Tunnel It[/bold blue]",

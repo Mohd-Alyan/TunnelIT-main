@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Tunnel It Dashboard</title>
+    <!-- Tailwind CSS v3 with Forms & Container Plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0c0d11',
+                            card: '#14151b',
+                            cardBorder: '#21232d',
+                            surface: '#1a1c24',
+                            surfaceHover: '#232632',
+                            mint: '#3dd598',
+                            cyan: '#38bdf8',
+                            orange: '#f59e0b',
+                            red: '#ef4444',
+                            yellow: '#eab308',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body class="bg-brand-bg text-gray-200 font-sans min-h-screen antialiased selection:bg-brand-mint/20 selection:text-brand-mint">
+<!-- BEGIN: MainContainer -->
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- BEGIN: TopHeader -->
+    <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-[#1f212b]">
+        <!-- Title & Live Status Indicator -->
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+                Tunnel It Dashboard
+            </h1>
+            <div class="flex items-center gap-2 mt-1 text-sm font-medium">
+                <span class="text-gray-400">System Status:</span>
+                <span id="system-status" class="inline-flex items-center gap-1.5 text-brand-mint font-semibold">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-mint opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-mint"></span>
+                    </span>
+                    Healthy (Live)
+                </span>
+            </div>
+        </div>
+        <!-- Tunnel Metadata Bar -->
+        <div class="flex flex-wrap items-center gap-3 text-xs font-mono">
+            <!-- Tunnel ID Pill -->
+            <div class="bg-brand-card border border-brand-cardBorder px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
+                <span class="text-gray-400 font-sans uppercase tracking-wider text-[10px]">Tunnel ID:</span>
+                <span id="tunnel-id-display" class="text-white font-semibold tracking-wide">{{ tunnel_id }}</span>
+                <button id="copy-tunnel-id" class="text-gray-400 hover:text-white transition-colors" title="Copy Tunnel ID" data-value="{{ tunnel_id }}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Local Port Pill -->
+            <div class="bg-brand-card border border-brand-cardBorder px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
+                <span class="text-gray-400 font-sans uppercase tracking-wider text-[10px]">Local Port:</span>
+                <span id="local-port-display" class="text-brand-mint font-semibold">{{ local_port }}</span>
+            </div>
+            <!-- Public URL Pill with Copy Link -->
+            <div class="bg-brand-card border border-brand-cardBorder px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
+                <span class="text-gray-400 font-sans uppercase tracking-wider text-[10px]">Public URL:</span>
+                <a id="public-url-link" class="text-blue-400 hover:text-blue-300 underline underline-offset-2 truncate max-w-[240px] sm:max-w-none" href="{{ public_url }}" rel="noreferrer" target="_blank">{{ public_url }}</a>
+                <button id="copy-public-url" class="text-gray-400 hover:text-white transition-colors" title="Copy Public URL" data-value="{{ public_url }}">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- END: TopHeader -->
+    <!-- BEGIN: TopMetricsGrid -->
+    <section aria-label="Tunnel Primary Metrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Metric 1: Total Requests -->
+        <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-[#2f3240] transition">
+            <div class="flex items-center justify-between text-xs text-gray-400 uppercase tracking-wider font-medium">
+                <span class="flex items-center gap-1.5">
+                    Total Requests
+                    <span class="cursor-pointer text-gray-500 hover:text-gray-300" title="Total captured requests in tunnel">ⓘ</span>
+                </span>
+                <span class="text-[11px] font-mono text-gray-500">REALTIME</span>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+                <div>
+                    <div id="metric-total" class="text-3xl font-bold text-white tracking-tight">0</div>
+                    <div class="mt-1 flex items-center gap-1 text-xs text-brand-mint font-medium">
+                        <span id="metric-total-trend">↗ 0%</span>
+                        <span class="text-gray-500 font-normal">active tunnel</span>
+                    </div>
+                </div>
+                <!-- Sparkline Mini Graph -->
+                <div class="w-24 h-11 relative">
+                    <svg id="sparkline-total" class="w-full h-full glow-cyan" preserveAspectRatio="none" viewBox="0 0 100 45"></svg>
+                </div>
+            </div>
+        </div>
+        <!-- Metric 2: 2xx Success Rate -->
+        <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-[#2f3240] transition">
+            <div class="flex items-center justify-between text-xs text-gray-400 uppercase tracking-wider font-medium">
+                <span class="flex items-center gap-1.5">
+                    2xx Success
+                    <span class="cursor-pointer text-gray-500 hover:text-gray-300" title="Successful HTTP 2xx executions">ⓘ</span>
+                </span>
+                <span id="metric-2xx-badge" class="text-[11px] font-mono text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded">0% OK</span>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+                <div>
+                    <div id="metric-2xx" class="text-3xl font-bold text-white tracking-tight">0</div>
+                    <div class="mt-1 flex items-center gap-1 text-xs text-brand-mint font-medium">
+                        <span id="metric-2xx-trend">↗ 0%</span>
+                        <span class="text-gray-500 font-normal">than last period</span>
+                    </div>
+                </div>
+                <!-- Sparkline Mini Graph -->
+                <div class="w-24 h-11 relative">
+                    <svg id="sparkline-2xx" class="w-full h-full glow-mint" preserveAspectRatio="none" viewBox="0 0 100 45"></svg>
+                </div>
+            </div>
+        </div>
+        <!-- Metric 3: Latency (Avg & P95) -->
+        <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-[#2f3240] transition">
+            <div class="flex items-center justify-between text-xs text-gray-400 uppercase tracking-wider font-medium">
+                <span class="flex items-center gap-1.5">
+                    Avg / P95 Latency
+                    <span class="cursor-pointer text-gray-500 hover:text-gray-300" title="Response time latency distributions">ⓘ</span>
+                </span>
+                <span id="metric-p95-badge" class="text-[11px] font-mono text-yellow-400">P95: 0ms</span>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+                <div>
+                    <div id="metric-avg" class="text-3xl font-bold text-white tracking-tight">0<span class="text-base text-gray-400 font-normal">ms</span></div>
+                    <div class="mt-1 flex items-center gap-1 text-xs text-brand-mint font-medium">
+                        <span id="metric-avg-trend">↘ 0ms</span>
+                        <span class="text-gray-500 font-normal">ultra-fast</span>
+                    </div>
+                </div>
+                <!-- Sparkline Mini Graph -->
+                <div class="w-24 h-11 relative">
+                    <svg id="sparkline-latency" class="w-full h-full glow-amber" preserveAspectRatio="none" viewBox="0 0 100 45"></svg>
+                </div>
+            </div>
+        </div>
+        <!-- Metric 4: Errors (4xx, 5xx, Slow) -->
+        <div class="bg-brand-card border border-brand-cardBorder rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-[#2f3240] transition">
+            <div class="flex items-center justify-between text-xs text-gray-400 uppercase tracking-wider font-medium">
+                <span class="flex items-center gap-1.5">
+                    Errors & Slow (>2s)
+                    <span class="cursor-pointer text-gray-500 hover:text-gray-300" title="4xx Client, 5xx Server and timeouts">ⓘ</span>
+                </span>
+                <span id="metric-errors-badge" class="text-[11px] font-mono text-brand-mint">0 FAULTS</span>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+                <div>
+                    <div id="metric-errors" class="text-3xl font-bold text-white tracking-tight">0</div>
+                    <div class="mt-1 flex items-center gap-1 text-xs text-brand-mint font-medium">
+                        <span id="metric-errors-trend">0%</span>
+                        <span class="text-gray-500 font-normal">clean traffic</span>
+                    </div>
+                </div>
+                <!-- Sparkline flat zero -->
+                <div class="w-24 h-11 relative">
+                    <svg id="sparkline-errors" class="w-full h-full glow-mint" preserveAspectRatio="none" viewBox="0 0 100 45"></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END: TopMetricsGrid -->
+    <!-- BEGIN: VisualChartsAndBreakdownRow -->
+    <section aria-label="Charts and Breakdown" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- LEFT COLUMN: STATUS & HEALTH BREAKDOWN -->
+        <div class="lg:col-span-5 bg-brand-card border border-brand-cardBorder rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+                <!-- Header with Dropdown -->
+                <div class="flex items-center justify-between pb-4">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-300">STATUS BREAKDOWN</h2>
+                        <span class="cursor-pointer text-gray-500 hover:text-gray-300 text-xs" title="Overview of HTTP response statuses">ⓘ</span>
+                    </div>
+                    <div class="relative">
+                        <button class="bg-brand-surface hover:bg-brand-surfaceHover text-gray-300 text-xs px-3 py-1 rounded-md border border-[#272a38] flex items-center gap-1.5 font-medium transition">
+                            <span>Last month</span>
+                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Large Score / Indicator -->
+                <div class="mt-1 flex items-baseline gap-2">
+                    <span id="health-score" class="text-3xl font-bold text-brand-mint tracking-tight">100%</span>
+                    <span class="text-sm font-medium text-gray-400">Tunnel Health Score</span>
+                </div>
+                <!-- Segmented Horizontal Bar -->
+                <div class="mt-4 h-3 w-full bg-[#1b1d25] rounded-md overflow-hidden flex p-0.5 gap-1 border border-[#262834]">
+                    <div id="bar-2xx" class="h-full bg-brand-mint rounded-sm w-[0%]" title="2xx Success"></div>
+                    <div id="bar-3xx" class="h-full bg-brand-cyan rounded-sm w-[0%]" title="3xx Cached"></div>
+                    <div id="bar-4xx" class="h-full bg-brand-orange/40 rounded-sm w-[0%]" title="4xx Client Error"></div>
+                    <div id="bar-5xx" class="h-full bg-brand-red/40 rounded-sm w-[0%]" title="5xx Server Error"></div>
+                    <div id="bar-slow" class="h-full bg-brand-yellow/40 rounded-sm w-[0%]" title="Slow Requests"></div>
+                </div>
+                <!-- Segment Legends and Values Table -->
+                <div class="mt-6 space-y-3 font-mono text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                        <div class="flex items-center gap-2.5 font-sans"><span class="w-2.5 h-2.5 rounded-sm bg-brand-mint inline-block"></span><span>2xx Success</span></div>
+                        <div class="flex items-center gap-8 font-mono"><span id="legend-2xx-pct" class="text-gray-400">0%</span><span id="legend-2xx-count" class="text-white font-medium w-8 text-right">0</span></div>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-300">
+                        <div class="flex items-center gap-2.5 font-sans"><span class="w-2.5 h-2.5 rounded-sm bg-brand-cyan inline-block"></span><span>3xx Cached</span></div>
+                        <div class="flex items-center gap-8 font-mono"><span id="legend-3xx-pct" class="text-gray-400">0%</span><span id="legend-3xx-count" class="text-white font-medium w-8 text-right">0</span></div>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-300">
+                        <div class="flex items-center gap-2.5 font-sans"><span class="w-2.5 h-2.5 rounded-sm bg-brand-orange inline-block"></span><span>4xx Client Error</span></div>
+                        <div class="flex items-center gap-8 font-mono"><span id="legend-4xx-pct" class="text-gray-400">0%</span><span id="legend-4xx-count" class="text-white font-medium w-8 text-right">0</span></div>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-300">
+                        <div class="flex items-center gap-2.5 font-sans"><span class="w-2.5 h-2.5 rounded-sm bg-brand-red inline-block"></span><span>5xx Server Error</span></div>
+                        <div class="flex items-center gap-8 font-mono"><span id="legend-5xx-pct" class="text-gray-400">0%</span><span id="legend-5xx-count" class="text-white font-medium w-8 text-right">0</span></div>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-300">
+                        <div class="flex items-center gap-2.5 font-sans"><span class="w-2.5 h-2.5 rounded-sm bg-brand-yellow inline-block"></span><span>Slow Requests (>2s)</span></div>
+                        <div class="flex items-center gap-8 font-mono"><span id="legend-slow-pct" class="text-gray-400">0%</span><span id="legend-slow-count" class="text-white font-medium w-8 text-right">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Footer status notice -->
+            <div class="mt-6 pt-3 border-t border-[#1f212b] flex items-center gap-2 text-xs text-brand-mint font-medium">
+                <span id="health-trend">↘ 0%</span>
+                <span class="text-gray-400 font-normal">error occurrences recorded this session</span>
+            </div>
+        </div>
+        <!-- RIGHT COLUMN: LATENCY DYNAMICS & VOLUME -->
+        <div class="lg:col-span-7 bg-brand-card border border-brand-cardBorder rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+                <!-- Header and Range Selector -->
+                <div class="flex items-center justify-between pb-3">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-300">REQUEST RATE & LATENCY DYNAMICS</h2>
+                        <span class="cursor-pointer text-gray-500 hover:text-gray-300 text-xs" title="Latency curve (ms) across active requests">ⓘ</span>
+                    </div>
+                    <div class="relative">
+                        <button class="bg-brand-surface hover:bg-brand-surfaceHover text-gray-300 text-xs px-3 py-1 rounded-md border border-[#272a38] flex items-center gap-1.5 font-medium transition">
+                            <span>Last month</span>
+                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Metric sub-header badges -->
+                <div class="flex items-center gap-6 text-xs mt-1">
+                    <div class="flex items-center gap-1.5 text-brand-mint font-medium"><span class="w-2 h-2 rounded-full bg-brand-mint"></span><span id="sub-avg">↗ 0ms</span><span class="text-gray-400 font-normal">Avg Duration</span></div>
+                    <div class="flex items-center gap-1.5 text-brand-cyan font-medium"><span class="w-2 h-2 rounded-full bg-brand-cyan"></span><span id="sub-p95">0ms</span><span class="text-gray-400 font-normal">P95 Peak</span></div>
+                    <div class="flex items-center gap-1.5 text-purple-400 font-medium"><span class="w-2 h-2 rounded-full bg-purple-400"></span><span id="sub-throughput">0 reqs</span><span class="text-gray-400 font-normal">Throughput</span></div>
+                </div>
+                <!-- Main SVG Canvas Graph -->
+                <div class="mt-6 w-full h-[180px] relative">
+                    <svg id="main-chart" class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 540 180"></svg>
+                </div>
+            </div>
+            <!-- Bottom X-axis timestamps -->
+            <div class="flex items-center justify-between text-[11px] font-mono text-gray-500 pt-3 border-t border-[#1f212b]">
+                <span id="x-label-1">--:--:--</span>
+                <span id="x-label-2">--:--:--</span>
+                <span id="x-label-3">--:--:--</span>
+                <span id="x-label-4">--:--:--</span>
+            </div>
+        </div>
+    </section>
+    <!-- END: VisualChartsAndBreakdownRow -->
+    <!-- BEGIN: LiveRequestsAndActionsSection -->
+    <section aria-label="Requests and Actions" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- LEFT: LIVE REQUESTS TABLE -->
+        <div class="lg:col-span-8 bg-brand-card border border-brand-cardBorder rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+                <!-- Table Header Controls -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-brand-cardBorder">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-300">LIVE REQUESTS</h2>
+                        <span class="cursor-pointer text-gray-500 hover:text-gray-300 text-xs" title="Captured inbound HTTP requests through the tunnel">ⓘ</span>
+                        <span id="request-count-badge" class="bg-[#20232e] text-gray-300 text-[10px] font-mono px-2 py-0.5 rounded-full">0 captured</span>
+                    </div>
+                    <!-- Table Filters -->
+                    <div class="flex items-center gap-2">
+                        <!-- Search filter input -->
+                        <div class="relative">
+                            <input id="filter-input" class="bg-[#191a22] text-xs text-gray-200 placeholder-gray-500 border border-[#282a36] rounded-md px-3 py-1.5 focus:outline-none focus:border-brand-mint w-44 sm:w-56 font-mono" placeholder="Filter by path, method..." type="text"/>
+                        </div>
+                        <!-- Status filter dropdown -->
+                        <div class="relative">
+                            <button id="status-filter-btn" class="bg-brand-surface hover:bg-brand-surfaceHover text-gray-300 text-xs px-3 py-1.5 rounded-md border border-[#272a38] flex items-center gap-1.5 font-medium transition">
+                                <span>All Status</span>
+                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Table Container -->
+                <div class="overflow-x-auto mt-2">
+                    <table class="w-full text-left border-collapse text-xs font-mono">
+                        <thead>
+                            <tr class="text-[11px] uppercase tracking-wider text-gray-400 border-b border-[#1f212b]">
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">TIME</th>
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">METHOD</th>
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">PATH</th>
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">STATUS</th>
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">DURATION</th>
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">REQ</th>
+                                <th class="py-3 px-2 font-medium font-sans" scope="col">RESP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-tbody" class="divide-y divide-[#1b1c24]">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Table Footer -->
+            <div class="mt-4 pt-3 border-t border-[#1f212b] flex items-center justify-between text-xs text-gray-500">
+                <span id="table-footer-text">Displaying 0 of 0 active requests</span>
+                <span class="font-mono text-gray-400">Stream listening on :{{ local_port }}</span>
+            </div>
+        </div>
+        <!-- RIGHT: ERRORS & ISSUES + SESSIONS -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <!-- Card 1: Errors & Issues Panel -->
+            <div class="bg-brand-card border border-brand-cardBorder rounded-2xl p-6 flex flex-col justify-between h-full">
+                <div>
+                    <!-- Header -->
+                    <div class="flex items-center justify-between pb-4 border-b border-brand-cardBorder">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-300">ERRORS & ISSUES</h2>
+                            <span class="cursor-pointer text-gray-500 hover:text-gray-300 text-xs" title="Realtime tunnel issues and alerts">ⓘ</span>
+                        </div>
+                        <span id="errors-badge" class="text-[10px] text-brand-mint bg-brand-mint/10 px-2 py-0.5 rounded font-mono font-medium">0 ERRORS</span>
+                    </div>
+                    <!-- Error List Container -->
+                    <div id="errors-list" class="py-8 flex flex-col items-center justify-center text-center flex-1">
+                        <div class="w-10 h-10 rounded-full bg-[#1b1d26] border border-[#272a38] flex items-center justify-center text-brand-mint mb-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm italic font-medium text-gray-400">No errors yet</span>
+                        <p class="text-xs text-gray-500 mt-1 max-w-[220px]">Tunnel traffic is responding without any 4xx or 5xx faults.</p>
+                    </div>
+                </div>
+                <!-- Action Buttons -->
+                <div class="pt-4 border-t border-[#1f212b] grid grid-cols-2 gap-2">
+                    <button id="export-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2 px-3 rounded-lg text-center transition flex items-center justify-center gap-1.5 shadow-sm" type="button">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                        <span>Export (JSON)</span>
+                    </button>
+                    <button id="clear-btn" class="bg-[#1c1e27] hover:bg-[#252834] text-gray-300 border border-[#2a2d3d] font-medium text-xs py-2 px-3 rounded-lg text-center transition" type="button">Clear View</button>
+                </div>
+            </div>
+            <!-- Card 2: Previous Sessions Selector -->
+            <div class="bg-brand-card border border-brand-cardBorder rounded-2xl p-5 flex flex-col justify-between">
+                <div class="flex items-center justify-between pb-3">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xs uppercase tracking-wider font-semibold text-gray-300">PREVIOUS SESSIONS</h2>
+                        <span class="cursor-pointer text-gray-500 hover:text-gray-300 text-xs" title="Load captured logs from previous tunnel sessions">ⓘ</span>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-mono">ARCHIVE</span>
+                </div>
+                <!-- Session selection form -->
+                <div class="space-y-3 mt-1">
+                    <div class="relative">
+                        <select id="history-select" class="w-full bg-[#181a23] text-gray-300 text-xs border border-[#272a38] rounded-lg px-3 py-2 focus:outline-none focus:border-brand-mint font-mono cursor-pointer">
+                            <option selected="" value="">-- Load Session --</option>
+                        </select>
+                    </div>
+                    <button id="load-history-btn" class="w-full bg-[#1e202b] hover:bg-[#282b3a] border border-[#2c3040] text-gray-200 text-xs font-medium py-2 px-4 rounded-lg transition text-center" type="button">Load Session Data</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END: LiveRequestsAndActionsSection -->
+    <!-- BEGIN: FooterSummaryBar -->
+    <footer class="pt-4 border-t border-[#1a1b24] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div class="bg-brand-card/70 border border-[#1f212b] rounded-xl p-3 flex flex-col justify-between">
+            <div class="text-[11px] text-gray-400 flex items-center justify-between">
+                <span class="uppercase tracking-wider">UPTIME & STATUS</span>
+                <span id="footer-uptime-status" class="text-brand-mint font-mono">Healthy</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="footer-uptime" class="text-lg font-bold text-white tracking-tight">0s</span>
+                <span class="text-[10px] text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded font-mono">STABLE</span>
+            </div>
+            <span class="text-[10px] text-gray-500 mt-1">Render cloud gateway active</span>
+        </div>
+        <div class="bg-brand-card/70 border border-[#1f212b] rounded-xl p-3 flex flex-col justify-between">
+            <div class="text-[11px] text-gray-400 flex items-center justify-between">
+                <span class="uppercase tracking-wider">FAILURE RATE</span>
+                <span id="footer-failure-rate" class="text-brand-mint font-mono">0.0%</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="footer-failure-rate-big" class="text-lg font-bold text-white tracking-tight">0%</span>
+                <span class="text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded font-mono">PERFECT</span>
+            </div>
+            <span class="text-[10px] text-gray-500 mt-1">0 failed of 0 total reqs</span>
+        </div>
+        <div class="bg-brand-card/70 border border-[#1f212b] rounded-xl p-3 flex flex-col justify-between">
+            <div class="text-[11px] text-gray-400 flex items-center justify-between">
+                <span class="uppercase tracking-wider">AVG DURATION</span>
+                <span id="footer-avg" class="text-brand-mint font-mono">0ms</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="footer-avg-big" class="text-lg font-bold text-white tracking-tight">0.0<span class="text-xs font-normal text-gray-400">ms</span></span>
+                <span class="text-[10px] text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded font-mono">LOW</span>
+            </div>
+            <span class="text-[10px] text-gray-500 mt-1">Under 20ms baseline</span>
+        </div>
+        <div class="bg-brand-card/70 border border-[#1f212b] rounded-xl p-3 flex flex-col justify-between">
+            <div class="text-[11px] text-gray-400 flex items-center justify-between">
+                <span class="uppercase tracking-wider">PEAK P95</span>
+                <span id="footer-p95" class="text-yellow-400 font-mono">0ms</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+                <span id="footer-p95-big" class="text-lg font-bold text-white tracking-tight">0.0<span class="text-xs font-normal text-gray-400">ms</span></span>
+                <span class="text-[10px] text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded font-mono">MID</span>
+            </div>
+            <span class="text-[10px] text-gray-500 mt-1">Max spike within safe limits</span>
+        </div>
+    </footer>
+    <!-- END: FooterSummaryBar -->
+</div>
+<!-- END: MainContainer -->
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

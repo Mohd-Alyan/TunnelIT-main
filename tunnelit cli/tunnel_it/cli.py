@@ -8,8 +8,10 @@ from rich.console import Console
 from .connection import TunnelConnection
 from .logging_config import setup_logging
 from .config import settings
+from .report import app as report_app
 
 app = typer.Typer(help="Tunnel It CLI Agent", no_args_is_help=True)
+app.add_typer(report_app, name="report")
 console = Console()
 
 @app.callback()
@@ -38,9 +40,6 @@ async def run_tunnel(port: int):
         
     connection = TunnelConnection(port)
     
-    # We create a task for the connection to allow graceful shutdown
-    # but since asyncio.run doesn't let us easily catch KeyboardInterrupt inside
-    # we just await it directly and rely on KeyboardInterrupt to stop the event loop
     try:
         await connection.connect()
     except asyncio.CancelledError:
@@ -60,7 +59,6 @@ def expose(port: int = typer.Argument(..., min=1, max=65535, help="Local port to
 def get_http_url(relay_url: str) -> str:
     parsed = urlparse(relay_url)
     scheme = "https" if parsed.scheme in ("wss", "https") else "http"
-    # Ensure no trailing path like /ws by only taking netloc
     return f"{scheme}://{parsed.netloc}"
 
 async def run_wakeup():
@@ -91,7 +89,6 @@ async def run_wakeup():
                     except Exception:
                         pass
             except Exception:
-                # Catch connection errors, timeouts, etc.
                 pass
             
             elapsed = time.time() - start_time
@@ -115,16 +112,13 @@ def changerelay(url: str = typer.Argument(..., help="The new relay URL")):
     """Change the persistent relay server"""
     from .config import USER_CONFIG_PATH, env_file_path
     
-    # Create directory if it doesn't exist
     USER_CONFIG_PATH.mkdir(parents=True, exist_ok=True)
     
-    # Read existing config to keep other variables
     lines = []
     if env_file_path.exists():
         with open(env_file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
             
-    # Update RELAY_URL
     new_lines = []
     found = False
     for line in lines:

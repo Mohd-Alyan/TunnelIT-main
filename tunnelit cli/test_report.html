@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tunnel It Report - </title>
+    
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: #1e1e2e; color: #cdd6f4; }
+        h1, h2 { color: #89b4fa; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #313244; }
+        th { background: #252536; color: #a6adc8; }
+        tr:hover { background: #2d2d44; }
+        .status-2xx { color: #a6e3a1; }
+        .status-3xx { color: #89b4fa; }
+        .status-4xx { color: #f9e2af; }
+        .status-5xx { color: #f38ba8; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #1e3a2e; color: #a6e3a1; }
+        .badge-warning { background: #3a2e1e; color: #f9e2af; }
+        .badge-danger { background: #3a1e1e; color: #f38ba8; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+        .summary-card { background: #252536; border: 1px solid #313244; border-radius: 8px; padding: 16px; }
+        .summary-card .value { font-size: 2rem; font-weight: 700; }
+        .summary-card .label { color: #a6adc8; font-size: 0.85rem; }
+    </style>
+    
+</head>
+<body>
+    <h1>Tunnel It Session Report</h1>
+    
+    <div class="summary-grid">
+        <div class="summary-card"><div class="value">0</div><div class="label">Total Requests</div></div>
+        <div class="summary-card"><div class="value">0</div><div class="label">2xx Success</div></div>
+        <div class="summary-card"><div class="value">0</div><div class="label">4xx Errors</div></div>
+        <div class="summary-card"><div class="value">0</div><div class="label">5xx Errors</div></div>
+        <div class="summary-card"><div class="value">0.0ms</div><div class="label">Avg Latency</div></div>
+        <div class="summary-card"><div class="value">0.0ms</div><div class="label">P95 Latency</div></div>
+        <div class="summary-card"><div class="value">0</div><div class="label">Slow (>2s)</div></div>
+        <div class="summary-card"><div class="value">0</div><div class="label">Total Errors</div></div>
+    </div>
+    
+    <h2>Session Info</h2>
+    <table>
+        <tr><th>Tunnel ID</th><td></td></tr>
+        <tr><th>Public URL</th><td><a href="" target="_blank"></a></td></tr>
+        <tr><th>Local Port</th><td>8000</td></tr>
+        <tr><th>Started</th><td>2026-09-20 17:07:55.634011</td></tr>
+        <tr><th>Ended</th><td>2026-09-20 17:07:56.167940</td></tr>
+    </table>
+    
+    <h2>Top Paths</h2>
+    <table>
+        <tr><th>Path</th><th>Count</th></tr>
+    </table>
+    
+    <h2>Top Errors</h2>
+    <table>
+        <tr><th>Path</th><th>Count</th></tr>
+    </table>
+    
+    <h2>All Requests</h2>
+    <table>
+        <tr><th>Time</th><th>Method</th><th>Path</th><th>Status</th><th>Duration</th></tr>
+    </table>
+</body>
+</html>
