@@ -26,8 +26,45 @@ if (Test-PythonExecutable "python") {
 } elseif (Test-PythonExecutable "py") {
     $pythonPath = "py"
 } else {
-    Write-Host "Error: Python is not installed, not in PATH, or is a Windows Store stub." -ForegroundColor Red
-    exit 1
+    Write-Host "Python is not installed. Initiating automatic installation..." -ForegroundColor Yellow
+    
+    # Disable progress bar to massively speed up Invoke-WebRequest in PowerShell 5.1
+    $ProgressPreference = 'SilentlyContinue'
+    $installerPath = "$env:TEMP\python-installer.exe"
+    
+    Write-Host "Downloading Python 3.12.6..." -ForegroundColor Cyan
+    Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe" -OutFile $installerPath
+    
+    Write-Host "Installing Python silently (this may take a minute or two)..." -ForegroundColor Cyan
+    # InstallAllUsers=0 ensures no admin/UAC prompt is needed
+    $installArgs = "/quiet InstallAllUsers=0 PrependPath=1 Include_test=0 Include_doc=0"
+    $process = Start-Process -FilePath $installerPath -ArgumentList $installArgs -Wait -PassThru
+    
+    if ($process.ExitCode -ne 0) {
+        Write-Host "Error: Python installation failed with code $($process.ExitCode)." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "Python installed successfully!" -ForegroundColor Green
+
+    # Refresh current session PATH to pick up the newly installed Python
+    $machinePathExpanded = [Environment]::GetEnvironmentVariable("PATH", "Machine")
+    $userPathExpanded = [Environment]::GetEnvironmentVariable("PATH", "User")
+    $env:PATH = "$userPathExpanded;$machinePathExpanded"
+
+    # Re-verify python path
+    if (Test-PythonExecutable "python") {
+        $pythonPath = "python"
+    } elseif (Test-PythonExecutable "py") {
+        $pythonPath = "py"
+    } else {
+        $fallbackPath = "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe"
+        if (Test-Path $fallbackPath -and (Test-PythonExecutable $fallbackPath)) {
+            $pythonPath = $fallbackPath
+        } else {
+            Write-Host "Error: Python was installed but couldn't be located. Please restart your terminal and run the script again." -ForegroundColor Red
+            exit 1
+        }
+    }
 }
 
 $versionString = & $pythonPath -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
