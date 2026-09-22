@@ -33,6 +33,15 @@ Alternatively, you can run Uvicorn directly:
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
+## Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check - returns `{"status": "healthy"}` |
+| `/status` | GET | Relay status and active tunnel count |
+| `/t/<tunnel_id>/...` | GET/POST/... | Proxy HTTP traffic to registered tunnel |
+| `/ws` | WS | WebSocket endpoint for CLI connections |
+
 ## Configuration
 
 Configuration is managed via environment variables. You can provide these in a `.env` file (see `.env.example`).
@@ -42,7 +51,7 @@ Configuration is managed via environment variables. You can provide these in a `
 * `PUBLIC_BASE_URL`: The public URL of the relay, used to generate dynamic tunnel links (default: `http://localhost:8000`).
 * `TUNNEL_ID_LENGTH`: The length of the dynamically generated tunnel ID (default: `8`).
 * `REQUEST_TIMEOUT`: Timeout in seconds when waiting for a response from the CLI (default: `30.0`).
-* `MAX_TUNNELS`: Maximum number of allowed simultaneous tunnels (default: `1000`).
+* `MAX_TUNNELS`: Maximum number of allowed simultaneous tunnels (default: `100`).
 * `LOG_LEVEL`: Logging verbosity level, e.g., `INFO`, `DEBUG` (default: `INFO`).
 
 ## Protocol
