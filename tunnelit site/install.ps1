@@ -84,14 +84,14 @@ $isVenv = & $pythonPath -c "import sys; print(sys.prefix != sys.base_prefix)"
 Write-Host "Installing Tunnel It CLI from GitHub..."
 if ($isVenv -eq "True") {
     Write-Host "Virtual environment detected. Installing directly into venv..." -ForegroundColor Cyan
-    & $pythonPath -m pip install "git+https://github.com/Mohd-Alyan/TunnelIT-main.git#subdirectory=tunnelit cli"
+    & $pythonPath -m pip install "https://github.com/Mohd-Alyan/TunnelIT-main/archive/refs/heads/main.zip#subdirectory=tunnelit cli"
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Error: Installation failed." -ForegroundColor Red
         exit 1
     }
     $scriptsPath = & $pythonPath -c "import sysconfig; print(sysconfig.get_path('scripts'))"
 } else {
-    & $pythonPath -m pip install --user "git+https://github.com/Mohd-Alyan/TunnelIT-main.git#subdirectory=tunnelit cli"
+    & $pythonPath -m pip install --user "https://github.com/Mohd-Alyan/TunnelIT-main/archive/refs/heads/main.zip#subdirectory=tunnelit cli"
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Error: Installation failed." -ForegroundColor Red
         exit 1
