@@ -29,3 +29,6 @@ tunnel-it = "tunnel_it.cli:app"
 
 [tool.setuptools.packages.find]
 include = ["tunnel_it*"]
+
+[tool.setuptools.package-data]
+tunnel_it = ["dashboard/templates/*", "dashboard/static/*"]
